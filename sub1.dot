@@ -1,0 +1,20 @@
+digraph abc{
+
+    node [shape="record"];
+    edge [style="dashed"];
+
+    a [style="filled", color="black", fillcolor="chartreuse"];
+    b;
+
+    subgraph cluster_cd{
+        label="c and d";
+        bgcolor="mintcream";
+        c;
+        d;
+    }
+
+    //a -> b;
+    //b -> d;
+    //c -> d [color="red"];
+    a -> b -> c -> d;
+}

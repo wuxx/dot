@@ -1,0 +1,82 @@
+digraph G {
+    edge [fontname="FangSong"]; 
+    node [shape=box, fontname="FangSong" size="20,20"];
+    subgraph cluster_arp_request {
+        //label="arp_request";
+        "process connection" -> "process input packet";
+    }
+    subgraph cluster_process_input_packet {
+        label="process input IP datagram";
+        bgcolor="mintcream";
+        "IP头部是否是0x45" -> "IP头报告的IP数据报长度 <= 实际收到的IP数据报长度" [label="是"];
+        "IP头部是否是0x45" -> "丢弃此数据报" [label="否"];
+
+        "IP头报告的IP数据报长度 <= 实际收到的IP数据报长度" -> "IP头中的目的IP地址是否是本机" [label="是"];
+        "IP头报告的IP数据报长度 <= 实际收到的IP数据报长度" -> "数据报破损" [label="否"];
+        "数据报破损"  -> "丢弃此数据报";
+
+        "IP头中的目的IP地址是否是本机" -> "计算IP校验和" [label="是"];
+        "IP头中的目的IP地址是否是本机" -> "丢弃此数据报" [label="否"];
+
+        "计算IP校验和" -> "IP承载的协议";
+        "IP承载的协议" -> "tcp_input" [label="TCP"];
+        "IP承载的协议" -> "icmp_input" [label="ICMP"];
+        
+        "icmp_input" -> "是否是ECHO" [label="查看类型"];
+        "是否是ECHO" -> "丢弃此数据报" [label="否"];
+        "是否是ECHO" -> "设置回复报文" [label="是"];
+        "设置回复报文" -> "发送IP数据报";
+
+        "tcp_input" -> "计算TCP校验和";
+        "计算TCP校验和" -> "遍历uip_conns, 根据源IP地址，源端口，目的端口，进行匹配" [label="校验和正确"];
+        "计算TCP校验和" -> "丢弃此数据报" [label="校验和错误"];
+
+        "遍历uip_conns, 根据源IP地址，源端口，目的端口，进行匹配" -> "收到的数据包数据属于某个已建立的连接" [label="找到匹配"];
+        "收到的数据包数据属于某个已建立的连接"  -> "查看TCP flag是否是RST";
+        "查看TCP flag是否是RST" -> "关闭此连接，通知application" [label="是"];
+        "关闭此连接，通知application" -> "丢弃此数据报";
+        "查看TCP flag是否是RST" -> "检查收到的TCP segment的序列号是否符合预期" [label="否"];
+        "检查收到的TCP segment的序列号是否符合预期" -> "检查TCP flag是否是ACK，且本端有数据未被确认" [label="是"];
+        "检查收到的TCP segment的序列号是否符合预期" -> "发送ACK，acknowledgement number为预期的TCP segment 序列号" [label="否"];
+        "发送ACK，acknowledgement number为预期的TCP segment 序列号" -> "发送IP数据报";
+        "检查TCP flag是否是ACK，且本端有数据未被确认" -> "更新此连接的seqnence number" [label="是"]; 
+        "检查TCP flag是否是ACK，且本端有数据未被确认" -> "检查连接的STATE" [label="否"]; 
+        "更新此连接的seqnence number" -> "检查连接的STATE";
+        "检查连接的STATE" -> "上次发送的数据包(SYN|ACK)是否已被确认" [label="UIP_SYN_RCVD"];
+        "上次发送的数据包(SYN|ACK)是否已被确认" -> "设置uip_flags为UIP_CONNECTED，通知application" [label="是"];
+        "上次发送的数据包(SYN|ACK)是否已被确认" -> "丢弃此数据报" [label="否"];
+        "设置uip_flags为UIP_CONNECTED，通知application" -> "application是否有数据要发送";
+        "application是否有数据要发送" -> "填充数据到缓冲区，并设置uip_slen" [label="是"];
+        "填充数据到缓冲区，并设置uip_slen" -> "发送IP数据报";
+        "application是否有数据要发送" -> "对端是否发送了新的数据" [label="否"];
+        "对端是否发送了新的数据" -> "发送一个纯ACK确认此数据" [label="是"];
+        "发送一个纯ACK确认此数据" -> "发送IP数据报";
+        "对端是否发送了新的数据" -> "对端发送的是ACK" [label="否"];
+        "对端发送的是ACK" -> "丢弃此数据报";
+        "检查连接的STATE" -> "对端是否发送了FIN" [label="UIP_ESTABLISHED"];
+        "对端是否发送了FIN" -> "本端是否有数据未被确认" [label="是"];
+        "对端是否发送了FIN" -> "发送过来的TCP segment中是否有数据" [label="否"];
+        "发送过来的TCP segment中是否有数据" -> "设置uip_flags |= UIP_NEWDATA，计算下一次收到的序列号" [label="是"];
+        "设置uip_flags |= UIP_NEWDATA，计算下一次收到的序列号" -> "";
+        "本端是否有数据未被确认" -> "丢弃此数据报" [label="是"];
+        "本端是否有数据未被确认" -> "设置uip_flags = UIP_CLOSE，通知application，设置FIN|ACK" [label="否"];
+        "设置uip_flags = UIP_CLOSE，通知application，设置FIN|ACK"  -> "发送IP数据报";
+        "遍历uip_conns, 根据源IP地址，源端口，目的端口，进行匹配" -> "此包是一个新的SYN连接包，或者是一个老的数据包" [label="未找到匹配"];
+        "此包是一个新的SYN连接包，或者是一个老的数据包" -> "新的SYN连接包";
+        "此包是一个新的SYN连接包，或者是一个老的数据包" -> "老的数据包";
+
+        "老的数据包" -> "发送RST";
+        "新的SYN连接包" -> "检查本地是否监听此包中的目的端口";
+        "检查本地是否监听此包中的目的端口" -> "发送RST" [label="未监听"];
+        "发送RST" -> "发送IP数据报";
+        "检查本地是否监听此包中的目的端口" -> "在uip_conns中搜索一个可用的conn条目" [label="正在监听"];
+        "在uip_conns中搜索一个可用的conn条目" -> "丢弃此数据报" [label="没有可用conn条目"];
+        "在uip_conns中搜索一个可用的conn条目" -> "使用conn来处理SYN包" [label="存在可用conn条目"];
+        "使用conn来处理SYN包" -> "记录源IP，源目的端口，状态机迁移：UIP_CLOSED -> UIP_SYN_RCVD，设置TCP头，SYN|ACK，设置IP头" 
+        "记录源IP，源目的端口，状态机迁移：UIP_CLOSED -> UIP_SYN_RCVD，设置TCP头，SYN|ACK，设置IP头" -> "发送IP数据报";
+
+    }
+
+    "uip_process" [ shape = plaintext ];
+}
+

@@ -1,0 +1,12 @@
+digraph G {
+	edge [fontname="FangSong"]; 
+	node [shape=box, fontname="FangSong" size="20,20"];
+	S_INITIAL -> S_PRE_START [label="客户端发送出第一个数据包后"];
+	S_PRE_START -> S_START [label="客户端收到服务端的第一个包（确认客户端发出的第一个包），发出此包的ACK后"];
+	S_START -> S_SENT_KEY [label="客户端发送密钥方法后"];
+	S_SENT_KEY -> S_GOT_KEY [label="客户端收到服务端发送的密钥方法后"];
+	S_GOT_KEY -> S_ACTIVE [label="客户端发送确认后"];
+    S_ACTIVE -> S_NORMAL_OP [label="密钥协商已完成，超过协商时间上限"];
+
+}
+

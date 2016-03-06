@@ -1,0 +1,17 @@
+digraph G {
+    edge [fontname="FangSong"]; 
+    node [shape=box, fontname="FangSong" size="20,20"];
+    subgraph cluster_arp_request {
+        label="arp_request";
+        "收到ARP request包" -> "查看目的地址";
+            "查看目的地址" -> "在本地arp缓存中更新此主机的arp条目,返回ARP REPLY包" [label="目的地址是本机"];
+    }
+    subgraph cluster_arp_reply {
+        label="arp_reply";
+        bgcolor="mintcream";
+        "收到ARP reply包" -> "查看目的地址 ";
+            "查看目的地址 " -> "在本地arp缓存中更新此主机的arp条目" [label="目的地址是本机"];
+    }
+
+}
+

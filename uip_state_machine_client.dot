@@ -1,0 +1,14 @@
+digraph G {
+    edge [fontname="FangSong"]; 
+    node [shape=box, fontname="FangSong" size="20,20"];
+    "UIP_CLOSE" -> "UIP_SYN_SENT" [label="发送SYN", style="dashed"];
+    "UIP_SYN_SENT" -> "UIP_CLOSE" [label="SYN未得到确认，超时", style="dashed"];
+    "UIP_SYN_SENT" -> "UIP_ESTABLISHED" [label="收到对端发的SYN|ACK，发送ACK", style="dashed"];
+    "UIP_ESTABLISHED" -> "UIP_LAST_ACK" [label="收到FIN，发送FIN|ACK（被动关闭）", style="dashed"];
+    "UIP_ESTABLISHED" -> "UIP_FIN_WAIT_1" [label="发送FIN|ACK，（主动关闭）", style="dashed"]
+    "UIP_FIN_WAIT_1" -> "UIP_TIME_WAIT" [label="收到FIN|ACK",style="dashed"]
+    "UIP_FIN_WAIT_1" -> "UIP_FIN_WAIT_2" [label="收到ACK",style="dashed"]
+    "UIP_LAST_ACK" -> "UIP_CLOSE" [label="收到ACK",style="dashed"];
+    "UIP_TIME_WAIT" -> "UIP_CLOSE" [label="定时器超时",style="dashed"];
+    "UIP_FIN_WAIT_2" -> "UIP_CLOSE" [label="定时器超时",style="dashed"];
+}

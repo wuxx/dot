@@ -1,0 +1,14 @@
+digraph G{
+    size = "4, 4"
+    a->b->c;
+    b->d;
+    
+    a[shape = polygon, sides = 5, peripheries=3, color = lightblue, style = filled];
+    //我的形状是多边形，有五条边，3条边框， 颜色的淡蓝色， 样式为填充
+    c[shape = polygon, sides = 4, skew= 0.4, lable = "hello world"];
+    //我的形状是4变形， 角的弯曲度0.4, 里面的内容为"hello world"
+    d[shape = invtriange];
+    //我是三角形
+    e[shape = polygon, side = 4, distortion = .7];
+    //我是梯形啊
+}

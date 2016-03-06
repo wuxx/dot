@@ -1,0 +1,13 @@
+﻿digraph G {
+	edge [fontname="FangSong"]; 
+	node [shape=box, fontname="FangSong" size="20,20"];
+	S_INITIAL -> S_PRE_START [label="测试"];
+	S_PRE_START -> S_START [label="receive server's first packet(ack my first packet) and send ack of the server's first packet "];
+	S_START -> S_SENT_KEY;
+	S_SENT_KEY -> S_GOT_KEY;
+	S_GOT_KEY -> S_ACTIVE;
+    S_ACTIVE -> S_NORMAL_OP [label="negotiate timeout"];
+	A -> B [label="娴嬭瘯"];
+
+}
+

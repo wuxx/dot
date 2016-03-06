@@ -1,0 +1,66 @@
+digraph G{
+    fontname = "Courier New"
+    fontsize = 10
+    rankdir = TB;
+    node [shape = "record"];
+    
+    subgraph cluster_FileSystem {
+        label = "struct FileSystem"
+        bgcolor = "yellow"
+        FS [label="{<head>Filesystem_Ops|fsName|<prev>prev|<next>next}"];
+    };
+
+    subgraph cluster_Filesystem_Ops {
+        label = "struct Filesystem_Ops"
+        bgcolor = "yellow"
+        FSO [label="{<head>Format|Mount}"];
+    };
+    
+    FS:head -> FSO:head;
+
+    subgraph cluster_BlockDevice {
+        label = "struct BlockDevice"
+        bgcolor = "green"
+        BD [label="{<head>name|<bdo>Block_Device_Ops|unit|inUse|driverData|waitQueue|requestQueue|prev|next}"];
+    };
+
+    subgraph cluster_Block_Device_Ops {
+        label = "struct Block_Device_Ops"
+        bgcolor = "green"
+        BDO [label="{<head>Open|Close|Get_Num_Blocks}"];
+    };
+    
+    BD:bdo -> BDO:head;
+    
+    subgraph cluster_Mount_Point {
+        label = "struct Mount_Point"
+        bgcolor = "pink"
+        MP [label="{<head>Mount_Point_Ops|pathPrefix|<bd>Block_Device|fsData|prev|next}"];
+    };
+
+    subgraph cluster_Mount_Point_Ops {
+        label = "struct Mount_Point_Ops"
+        bgcolor = "pink"
+        MPO [label="{<head>Open|Create_Directory|Open_Directory|Stat|Sync|Delete}"];
+    };
+
+    MP:head -> MPO:head;
+
+    subgraph cluster_File {
+        label = "struct File"
+        bgcolor = "purple"
+        FE [label="{<head>File_Ops|filePos|endPos|fsData|mode|<mp>Mount_Point}"];
+    };
+    
+    subgraph cluster_File_Ops {
+        label = "struct File_Ops"
+        bgcolor = "purple"
+        FO [label="{<head>FStat|Read|Write|Seek|Close|Read_Entry}"];
+    };
+
+    FE:head -> FO;
+
+    MP:bd -> BD;
+
+    FE:mp -> MP;
+}

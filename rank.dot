@@ -1,0 +1,19 @@
+digraph G {
+    a -> b ;
+    b -> c ;
+    
+    subgraph x{
+        rank = same ;
+        b->d;
+    }
+
+    subgraph y{
+        d->e;
+    }
+
+    subgraph z{
+        rank=same;
+        c->e;
+    }
+
+}

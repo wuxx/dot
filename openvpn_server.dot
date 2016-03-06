@@ -1,0 +1,39 @@
+digraph G {
+    node [shape = record,height=.1];
+	main[label = "<f0>main"];
+	tunnel_point_to_point[label="<f0>tunnel_point_to_point"];
+	tunnel_server[label="<f0>tunnel_server"];
+	tunnel_server_udp[label="<f0>tunnel_server_udp"];
+	tunnel_server_tcp[label="<f0>tunnel_server_tcp"];
+	
+	tunnel_server_udp_single_threaded[label="<f0>tunnel_server_udp_single_threaded"];
+
+	io_wait[label="<f0>io_wait"];
+	multi_process_io_udp[label="<f0>multi_process_io_udp"];
+	multi_process_outgoing_link[label="<f0>multi_process_outgoing_link"];
+	multi_process_outgoing_tun[label="<f0>multi_process_outgoing_tun"];
+	read_incoming_link[label="<f0>read_incoming_link"];
+	multi_process_incoming_link[label="<f0>multi_process_incoming_link"];
+	read_incoming_tun[label="<f0>read_incoming_tun"];
+	multi_process_incoming_tun[label="<f0>multi_process_incoming_tun"];
+	
+	"main":f0 -> "tunnel_point_to_point":f0[label="c.options.mode==MODE_POINT_TO_POINT"];
+	"main":f0 -> "tunnel_server":f0[label="c.options.mode==MODE_SERVER"];
+	"tunnel_server":f0 -> "tunnel_server_udp":f0[label="(&c)->options.ce.proto==PROTO_UDPv4"];
+	"tunnel_server":f0 -> "tunnel_server_tcp":f0[label="(&c)->options.ce.proto==PROTO_TCPv4_SERVER"];
+	
+	"tunnel_server_udp":f0 -> "tunnel_server_udp_single_threaded":f0;
+	"tunnel_server_udp_single_threaded":f0 -> "io_wait":f0;
+	"tunnel_server_udp_single_threaded":f0 -> "multi_process_io_udp":f0;
+	"multi_process_io_udp":f0 -> "multi_process_outgoing_link":f0;
+	"multi_process_io_udp":f0 -> "multi_process_outgoing_tun":f0;
+	"multi_process_io_udp":f0 -> "read_incoming_link":f0;
+	"multi_process_io_udp":f0 -> "multi_process_incoming_link":f0;
+	subgraph s11{
+		"multi_process_io_udp":f0 -> "read_incoming_tun":f0;
+		"multi_process_io_udp":f0 -> "multi_process_incoming_tun":f0;
+	}
+
+
+	
+}

@@ -1,0 +1,4 @@
+digraph G{
+    //b->c[tailport = se];
+    b->c:se;
+}

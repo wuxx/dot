@@ -1,0 +1,12 @@
+digraph G {
+    edge [fontname="FangSong"]; 
+    node [shape=box, fontname="FangSong" size="20,20"];
+    "重发次数达到上限" -> "uip_flags == UIP_TIMEDOUT";
+    "需要做一次重发" -> "uip_flags == UIP_REXMIT";
+    "向application请求新的数据" -> "uip_flags == UIP_POLL";
+    "收到一个RST包" -> "uip_flags == UIP_ABORT";
+    "上次发送的数据已得到确认" -> "uip_flags == UIP_ACKDATA" ;
+    "三次握手建立"  -> "uip_flags == UIP_CONNECTED";
+    "收到新数据" -> "uip_flags |= UIP_NEWDATA";
+    "连接关闭" -> "uip_flags |= UIP_CLOSE";
+}

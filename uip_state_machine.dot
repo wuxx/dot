@@ -1,0 +1,21 @@
+digraph G {
+    edge [fontname="FangSong"]; 
+    node [shape=box, fontname="FangSong" size="20,20"];
+    size="10,8"; ratio = fill;
+    "UIP_CLOSE" [color="skyblue", style="filled"];
+    "UIP_ESTABLISHED" [color="Peru", style="filled"];
+    "UIP_CLOSE" -> "UIP_SYN_RCVD" [label="收到SYN,发送SYN|ACK", color="#FF0000", style="dashed"];
+    "UIP_CLOSE" -> "UIP_SYN_SENT" [label="发送SYN", color="#0000FF", style="dashed"];
+    //"UIP_SYN_RCVD" -> "UIP_CLOSE" [label="SYN|ACK未得到确认,超时", style="dashed"];
+    "UIP_SYN_SENT" -> "UIP_ESTABLISHED" [label="收到对端发的SYN|ACK,发送ACK", color="#0000FF", style="dashed"];
+    "UIP_SYN_RCVD" -> "UIP_ESTABLISHED" [label="收到对端发的ACK", color="#FF0000", style="dashed"];
+    "UIP_ESTABLISHED" -> "UIP_LAST_ACK" [label="收到FIN,发送FIN|ACK(被动关闭)", style="dashed"];
+    "UIP_ESTABLISHED" -> "UIP_FIN_WAIT_1" [label="发送FIN|ACK,(主动关闭)", style="dashed"];
+    "UIP_FIN_WAIT_1" -> "UIP_TIME_WAIT" [label="收到FIN|ACK",style="dashed"];
+    "UIP_FIN_WAIT_1" -> "UIP_FIN_WAIT_2" [label="收到ACK",style="dashed"];
+    "UIP_FIN_WAIT_1" -> "UIP_CLOSING" [label="收到FIN,发送ACK", style="dashed"];
+    "UIP_FIN_WAIT_2" -> "UIP_TIME_WAIT" [label="收到FIN,发送ACK",style="dashed"];
+    "UIP_CLOSING" -> "UIP_TIME_WAIT" [label="收到ACK", style="dashed"];
+    "UIP_TIME_WAIT" -> "UIP_CLOSE" [label="定时器超时",style="dashed"];
+    "UIP_LAST_ACK" -> "UIP_CLOSE" [label="收到ACK",style="dashed"];
+}
