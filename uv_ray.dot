@@ -1,0 +1,25 @@
+digraph ast{
+    fontname = "Microsoft YaHei";
+    fontsize = 10;
+
+    node [shape = circle, fontname = "Microsoft YaHei", fontsize = 10];
+    edge [fontname = "Microsoft YaHei", fontsize = 10];
+    node [shape="plaintext"];
+
+    subgraph cluster_uv_320p {
+        uv_320p     [ label = "长波紫外线(>320nm)" ];
+        bad1        [ label = "激发皮肤产生活性氧类物质，引起DNA的继发性损伤" ];
+    };  
+
+    subgraph cluster_uv_290_320 {
+        uv_290_320  [ label = "中波紫外线(290nm-320nm)" ];
+        bad1        [ label = "能直接被DNA吸收，引起DNA损伤，造成皮肤癌" ];
+        good1       [ label = "促进皮肤内维生素D的合成。维生素D的主要功能是促进小肠对钙的吸收" ];
+        good2       [ label = "增强酪氨酸酶的活性，使黑色素的合成增加" ];
+            };  
+
+    subgraph cluster_uv_200_290 {
+        label = "短波紫外线(200nm-290nm)"
+    };  
+}
+
