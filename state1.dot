@@ -1,0 +1,17 @@
+digraph finite_state_machine {
+
+    "INIT"       -> "READY"         [ label = "init succ", style="dashed"];
+    "READY"      -> "READY"         [ label = "REQ_SRESET" ];
+    "READY"      -> "GCODE_EXEC"    [ label = "REQ_EXEC_GCODE" ];
+    "GCODE_EXEC" -> "GCODE_WAIT"    [ label = "gcode exec finish", style="dashed"];
+    "GCODE_WAIT" -> "READY"         [ label = "REQ_SRESET"];
+    "GCODE_WAIT" -> "GCODE_EXEC"    [ label = "REQ_EXEC_GCODE" ];
+
+    "HALT"       -> "READY"         [ label = "REQ_SRESET"];
+    "HALT"       -> "INIT"          [ label = "REQ_HRESET"];
+
+    "INIT"       -> "HALT"          [ label = "init fail"];
+    "GCODE_EXEC" -> "HALT"          [ label = "REQ_HALT | error"];
+    "GCODE_WAIT" -> "HALT"          [ label = "REQ_HALT | error"];
+    "READY"      -> "HALT"          [ label = "REQ_HALT | error"];
+}
